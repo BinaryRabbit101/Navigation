@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\binar\\\\Documents\\\\websites\\\\Navigation\" -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\binar\\\\Documents\\\\websites\" -Directory)",
+      "Bash(Sort-Object Name)",
+      "Bash(ls -d \"c:\\\\Users\\\\binar\\\\Documents\\\\websites\\\\\"*/ | grep -v Navigation | grep -v northerncall_v2)",
+      "Read(//c/Users/binar/Documents/**)",
+      "Bash(xargs grep -l \"laravel\\\\|inertia\")"
+    ]
+  }
+}
