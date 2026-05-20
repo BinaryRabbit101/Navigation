@@ -23,7 +23,7 @@ class WebsiteRequest extends FormRequest
             'url' => ['required', 'url', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'image' => [
-                $this->isMethod('post') ? 'nullable' : 'sometimes',
+                'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp,svg',
                 'max:4096',

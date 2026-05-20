@@ -58,10 +58,18 @@ function onFileChange(event: Event) {
 
 function submit() {
     const url = isEdit.value ? `/sites/${props.site!.id}` : '/sites';
-    form.post(url, {
-        forceFormData: true,
-        preserveScroll: true,
-    });
+    form
+        .transform((data) => {
+            if (data.image === null) {
+                const { image: _omit, ...rest } = data;
+                return rest;
+            }
+            return data;
+        })
+        .post(url, {
+            forceFormData: true,
+            preserveScroll: true,
+        });
 }
 </script>
 
