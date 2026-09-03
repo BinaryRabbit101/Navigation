@@ -12,6 +12,7 @@ class Website extends Model
         'description',
         'image_path',
         'url',
+        'alt_url',
         'sort_order',
     ];
 

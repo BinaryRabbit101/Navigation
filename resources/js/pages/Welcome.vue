@@ -9,6 +9,7 @@ type Site = {
     description: string | null;
     image_url: string | null;
     url: string;
+    alt_url: string | null;
 };
 
 withDefaults(
@@ -28,7 +29,9 @@ withDefaults(
     <div
         class="flex min-h-screen flex-col bg-background p-6 text-foreground lg:p-10"
     >
-        <header class="mx-auto mb-10 flex w-full max-w-6xl items-center justify-between">
+        <header
+            class="mx-auto mb-10 flex w-full max-w-6xl items-center justify-between"
+        >
             <h1 class="text-xl font-semibold tracking-tight">My Sites</h1>
             <nav class="flex items-center gap-3 text-sm">
                 <Link

@@ -19,6 +19,7 @@ type Site = {
     description: string | null;
     image_url: string | null;
     url: string;
+    alt_url: string | null;
     sort_order: number;
 };
 
@@ -82,8 +83,11 @@ function confirmDelete() {
                         <th class="px-4 py-3 font-medium">Image</th>
                         <th class="px-4 py-3 font-medium">Title</th>
                         <th class="px-4 py-3 font-medium">URL</th>
+                        <th class="px-4 py-3 font-medium">Alt URL</th>
                         <th class="px-4 py-3 font-medium">Order</th>
-                        <th class="px-4 py-3 text-right font-medium">Actions</th>
+                        <th class="px-4 py-3 text-right font-medium">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,9 +110,14 @@ function confirmDelete() {
                         </td>
                         <td class="px-4 py-3 font-medium">{{ site.title }}</td>
                         <td
-                            class="max-w-[20rem] truncate px-4 py-3 text-muted-foreground"
+                            class="max-w-[16rem] truncate px-4 py-3 text-muted-foreground"
                         >
                             {{ site.url }}
+                        </td>
+                        <td
+                            class="max-w-[16rem] truncate px-4 py-3 text-muted-foreground"
+                        >
+                            {{ site.alt_url ?? '—' }}
                         </td>
                         <td class="px-4 py-3 text-muted-foreground">
                             {{ site.sort_order }}

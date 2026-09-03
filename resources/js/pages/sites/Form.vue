@@ -14,6 +14,7 @@ type Site = {
     description: string | null;
     image_url: string | null;
     url: string;
+    alt_url: string | null;
     sort_order: number;
 };
 
@@ -36,6 +37,7 @@ const form = useForm({
     title: props.site?.title ?? '',
     description: props.site?.description ?? '',
     url: props.site?.url ?? '',
+    alt_url: props.site?.alt_url ?? '',
     sort_order: props.site?.sort_order ?? 0,
     image: null as File | null,
     _method: isEdit.value ? 'PUT' : 'POST',
@@ -58,18 +60,16 @@ function onFileChange(event: Event) {
 
 function submit() {
     const url = isEdit.value ? `/sites/${props.site!.id}` : '/sites';
-    form
-        .transform((data) => {
-            if (data.image === null) {
-                const { image: _omit, ...rest } = data;
-                return rest;
-            }
-            return data;
-        })
-        .post(url, {
-            forceFormData: true,
-            preserveScroll: true,
-        });
+    form.transform((data) => {
+        if (data.image === null) {
+            const { image: _omit, ...rest } = data;
+            return rest;
+        }
+        return data;
+    }).post(url, {
+        forceFormData: true,
+        preserveScroll: true,
+    });
 }
 </script>
 
@@ -93,10 +93,7 @@ function submit() {
             />
         </div>
 
-        <form
-            class="flex max-w-2xl flex-col gap-6"
-            @submit.prevent="submit"
-        >
+        <form class="flex max-w-2xl flex-col gap-6" @submit.prevent="submit">
             <div class="grid gap-2">
                 <Label for="title">Title</Label>
                 <Input
@@ -114,7 +111,7 @@ function submit() {
                     id="description"
                     v-model="form.description"
                     rows="3"
-                    class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
                     placeholder="Short description shown under the title."
                 />
                 <InputError :message="form.errors.description" />
@@ -130,6 +127,21 @@ function submit() {
                     placeholder="https://example.com"
                 />
                 <InputError :message="form.errors.url" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="alt_url">Alternative URL</Label>
+                <Input
+                    id="alt_url"
+                    v-model="form.alt_url"
+                    type="url"
+                    placeholder="http://192.168.0.164:94"
+                />
+                <p class="text-xs text-muted-foreground">
+                    Optional direct LAN address (IP and port), shown as a second
+                    link on the card.
+                </p>
+                <InputError :message="form.errors.alt_url" />
             </div>
 
             <div class="grid gap-2">

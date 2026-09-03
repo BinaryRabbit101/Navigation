@@ -21,6 +21,7 @@ class WebsiteRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'url' => ['required', 'url', 'max:2048'],
+            'alt_url' => ['nullable', 'url', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'image' => [
                 'nullable',
