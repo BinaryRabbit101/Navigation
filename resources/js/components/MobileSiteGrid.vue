@@ -86,11 +86,10 @@ const bare = (url: string) =>
                 </button>
             </div>
 
+            <!-- Opens with a fade; closes at once so two cards never overlap. -->
             <Transition
                 enter-active-class="transition duration-200 ease-out"
                 enter-from-class="-translate-y-1 opacity-0"
-                leave-active-class="transition duration-150 ease-in"
-                leave-to-class="-translate-y-1 opacity-0"
             >
                 <div
                     v-if="openIn(row)"
