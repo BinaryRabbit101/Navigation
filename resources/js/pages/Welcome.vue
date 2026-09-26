@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import MobileSiteGrid from '@/components/MobileSiteGrid.vue';
 import SiteCard from '@/components/SiteCard.vue';
 import { dashboard, login, register } from '@/routes';
 
@@ -60,12 +61,18 @@ withDefaults(
         </header>
 
         <main class="mx-auto w-full max-w-6xl flex-1">
-            <div
-                v-if="sites.length > 0"
-                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            >
-                <SiteCard v-for="site in sites" :key="site.id" :site="site" />
-            </div>
+            <template v-if="sites.length > 0">
+                <!-- Phones: an icon grid; tapping an icon opens its card beneath the row. -->
+                <MobileSiteGrid :sites="sites" class="sm:hidden" />
+
+                <div class="hidden grid-cols-2 gap-6 sm:grid lg:grid-cols-3">
+                    <SiteCard
+                        v-for="site in sites"
+                        :key="site.id"
+                        :site="site"
+                    />
+                </div>
+            </template>
 
             <div
                 v-else
