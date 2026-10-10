@@ -14,7 +14,8 @@ class WebsiteController extends Controller
 {
     public function home(): Response
     {
-        $sites = Website::orderBy('sort_order')->orderBy('id')->get();
+        // Hidden = a roster card whose project left the HUB map (nav:sync-map).
+        $sites = Website::where('hidden', false)->orderBy('sort_order')->orderBy('id')->get();
 
         // A mini-PC card whose site has cut over to a public copy ("<title> (public site)"
         // on the Live tab) is now for testing only; hand it the live address.

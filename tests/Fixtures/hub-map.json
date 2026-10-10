@@ -1,0 +1,114 @@
+{
+  "generated_at": "2026-10-10T12:00:00-05:00",
+  "families": [],
+  "items": [
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "kind": "project",
+      "status": "shipped",
+      "family": "household",
+      "lives": {
+        "urls": ["https://kitchen.thecorgisquad.com", "http://192.168.0.164:100"],
+        "box": "mini-PC :100"
+      }
+    },
+    {
+      "id": "budget",
+      "name": "Budget",
+      "kind": "project",
+      "status": "stable",
+      "family": "household",
+      "lives": { "urls": ["http://192.168.0.164:84"], "box": "mini-PC :84" }
+    },
+    {
+      "id": "newsite",
+      "name": "New Site",
+      "kind": "project",
+      "status": "building",
+      "family": "household",
+      "lives": { "urls": ["http://192.168.0.164:130", "https://new.thecorgisquad.com"], "box": "mini-PC :130" }
+    },
+    {
+      "id": "vault",
+      "name": "PasswordVault",
+      "kind": "project",
+      "status": "stable",
+      "family": "infrastructure",
+      "lives": { "urls": ["https://192.168.0.164:449", "http://192.168.0.164:88"], "box": "mini-PC :88" }
+    },
+    {
+      "id": "hub-site",
+      "name": "HUB (site)",
+      "kind": "project",
+      "status": "shipped",
+      "family": "infrastructure",
+      "lives": { "urls": ["http://192.168.0.164:120/", "https://minipc.jackal-hippocampus.ts.net:471/"] }
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "kind": "project",
+      "status": "shipped",
+      "family": "infrastructure",
+      "lives": { "urls": ["http://192.168.0.164:120/#/timeline"] }
+    },
+    {
+      "id": "tailnet-only",
+      "name": "Tailnet Only",
+      "kind": "project",
+      "status": "shipped",
+      "family": "household",
+      "lives": { "urls": ["https://minipc.jackal-hippocampus.ts.net:480"] }
+    },
+    {
+      "id": "farm-world",
+      "name": "Farm World",
+      "kind": "project",
+      "status": "stable",
+      "family": "games",
+      "lives": { "urls": ["http://192.168.0.164:96/latest.json"] }
+    },
+    {
+      "id": "mini-pc",
+      "name": "mini-PC",
+      "kind": "project",
+      "status": "stable",
+      "family": "infrastructure",
+      "lives": { "urls": ["http://192.168.0.164"] }
+    },
+    {
+      "id": "navigation",
+      "name": "Navigation",
+      "kind": "project",
+      "status": "stable",
+      "family": "infrastructure",
+      "lives": { "urls": ["http://192.168.0.164:80"] }
+    },
+    {
+      "id": "old-thing",
+      "name": "Old Thing",
+      "kind": "project",
+      "status": "archived",
+      "family": "games",
+      "lives": { "urls": ["http://192.168.0.164:140"] }
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "kind": "service",
+      "status": "stable",
+      "family": "infrastructure",
+      "lives": { "urls": ["https://github.com"] }
+    },
+    {
+      "id": "no-urls",
+      "name": "No URLs",
+      "kind": "project",
+      "status": "building",
+      "family": "games",
+      "lives": { "urls": [] }
+    }
+  ],
+  "schedules": []
+}

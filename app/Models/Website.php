@@ -14,7 +14,20 @@ class Website extends Model
         'url',
         'alt_url',
         'sort_order',
+        'roster_id',
+        'roster_slot',
+        'roster_name',
+        'roster_url',
+        'hidden',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return ['hidden' => 'boolean'];
+    }
 
     protected $appends = ['image_url', 'location'];
 

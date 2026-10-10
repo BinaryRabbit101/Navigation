@@ -28,6 +28,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // HUB map (map.json) that `nav:sync-map` builds the cards from; `self` is this
+    // site's own roster id, which gets no card.
+    'hub_map' => [
+        'source' => env('HUB_MAP_SOURCE', 'http://192.168.0.164:120/map.json'),
+        'self' => env('HUB_MAP_SELF', 'navigation'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
