@@ -14,8 +14,19 @@ class WebsiteController extends Controller
 {
     public function home(): Response
     {
+        $sites = Website::orderBy('sort_order')->orderBy('id')->get();
+
+        // A mini-PC card whose site has cut over to a public copy ("<title> (public site)"
+        // on the Live tab) is now for testing only; hand it the live address.
+        $live = $sites->where('location', 'live')->keyBy('title');
+
+        $sites->each(fn (Website $site) => $site->setAttribute(
+            'live_url',
+            $site->location === 'minipc' ? $live->get("{$site->title} (public site)")?->url : null,
+        ));
+
         return Inertia::render('Welcome', [
-            'sites' => Website::orderBy('sort_order')->orderBy('id')->get(),
+            'sites' => $sites,
             'canRegister' => Features::enabled(Features::registration()),
         ]);
     }

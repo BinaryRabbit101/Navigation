@@ -20,3 +20,16 @@ test('cards are sorted into the mini-pc and live tabs by their url', function ()
             ->where('sites.1.location', 'minipc')
             ->where('sites.2.location', 'live'));
 });
+
+test('a mini-pc card with a public twin is marked testing only', function () {
+    Website::create(['title' => 'Cooking Pantry', 'url' => 'https://minipc.jackal-hippocampus.ts.net:461/', 'sort_order' => 1]);
+    Website::create(['title' => 'Hearth', 'url' => 'https://minipc.jackal-hippocampus.ts.net:464', 'sort_order' => 2]);
+    Website::create(['title' => 'Cooking Pantry (public site)', 'url' => 'https://kitchen.thecorgisquad.com', 'sort_order' => 3]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('sites.0.live_url', 'https://kitchen.thecorgisquad.com')
+            ->where('sites.1.live_url', null)
+            ->where('sites.2.live_url', null));
+});

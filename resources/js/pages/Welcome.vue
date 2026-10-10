@@ -13,6 +13,7 @@ type Site = {
     url: string;
     alt_url: string | null;
     location: 'minipc' | 'live';
+    live_url: string | null;
 };
 
 type Tab = Site['location'];

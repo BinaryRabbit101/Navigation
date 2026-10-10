@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ExternalLink, Globe, Network } from 'lucide-vue-next';
+import { ExternalLink, FlaskConical, Globe, Network } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 type Site = {
@@ -9,6 +9,7 @@ type Site = {
     image_url: string | null;
     url: string;
     alt_url: string | null;
+    live_url?: string | null;
 };
 
 const props = defineProps<{ sites: Site[] }>();
@@ -54,20 +55,31 @@ const bare = (url: string) =>
                     @click="toggle(site.id)"
                 >
                     <span
-                        class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border bg-gradient-to-br from-muted to-muted/50 shadow-sm transition-all duration-200"
-                        :class="
+                        class="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border bg-gradient-to-br from-muted to-muted/50 shadow-sm transition-all duration-200"
+                        :class="[
                             openId === site.id
                                 ? 'border-primary ring-2 ring-primary/40'
-                                : 'border-sidebar-border/70 dark:border-sidebar-border'
-                        "
+                                : site.live_url
+                                  ? 'border-dashed border-amber-500/60'
+                                  : 'border-sidebar-border/70 dark:border-sidebar-border',
+                        ]"
                     >
                         <img
                             v-if="site.image_url"
                             :src="site.image_url"
                             alt=""
                             class="h-full w-full object-contain p-2"
+                            :class="{ 'opacity-50 grayscale': site.live_url }"
                             loading="lazy"
                         />
+                        <!-- Cut over to a public copy: this one is for testing only. -->
+                        <span
+                            v-if="site.live_url"
+                            class="absolute top-1 right-1 rounded-full bg-amber-100 p-0.5 text-amber-900 shadow-sm dark:bg-amber-950 dark:text-amber-200"
+                        >
+                            <FlaskConical class="h-3 w-3" />
+                            <span class="sr-only">Testing only</span>
+                        </span>
                         <Globe
                             v-else
                             class="h-7 w-7 text-muted-foreground/50"
@@ -78,7 +90,9 @@ const bare = (url: string) =>
                         :class="
                             openId === site.id
                                 ? 'font-semibold text-primary'
-                                : 'text-foreground'
+                                : site.live_url
+                                  ? 'text-muted-foreground'
+                                  : 'text-foreground'
                         "
                     >
                         {{ site.title }}
@@ -102,7 +116,14 @@ const bare = (url: string) =>
                             {{ openIn(row)!.title }}
                         </h3>
                         <p
-                            v-if="openIn(row)!.description"
+                            v-if="openIn(row)!.live_url"
+                            class="inline-flex w-fit items-center gap-1 rounded-full border border-amber-500/40 bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900 dark:bg-amber-950 dark:text-amber-200"
+                        >
+                            <FlaskConical class="h-3.5 w-3.5" />
+                            Testing only — the real site is live
+                        </p>
+                        <p
+                            v-else-if="openIn(row)!.description"
                             class="text-sm text-muted-foreground"
                         >
                             {{ openIn(row)!.description }}
@@ -114,13 +135,32 @@ const bare = (url: string) =>
 
                     <div class="flex flex-wrap items-center gap-2">
                         <a
-                            :href="openIn(row)!.url"
+                            v-if="openIn(row)!.live_url"
+                            :href="openIn(row)!.live_url!"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         >
+                            <Globe class="h-4 w-4" />
+                            Go to live site
+                        </a>
+                        <a
+                            :href="openIn(row)!.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            :class="
+                                openIn(row)!.live_url
+                                    ? 'border border-border bg-background text-foreground hover:bg-muted'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            "
+                        >
                             <ExternalLink class="h-4 w-4" />
-                            Open
+                            {{
+                                openIn(row)!.live_url
+                                    ? 'Open test copy'
+                                    : 'Open'
+                            }}
                         </a>
                         <a
                             v-if="openIn(row)!.alt_url"
