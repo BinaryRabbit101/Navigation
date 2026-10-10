@@ -69,6 +69,9 @@ const user = computed(() => page.props.auth.user);
                 <Input
                     id="email"
                     type="email"
+                    autocapitalize="none"
+                    autocorrect="off"
+                    spellcheck="false"
                     class="mt-1 block w-full"
                     name="email"
                     :default-value="user.email"
