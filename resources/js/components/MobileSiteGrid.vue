@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ExternalLink, FlaskConical, Globe, Network } from 'lucide-vue-next';
+import { ExternalLink, FlaskConical, Globe, House } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 type Site = {
@@ -36,7 +36,7 @@ const toggle = (id: number) => {
 
 const openIn = (row: Site[]) => row.find((site) => site.id === openId.value);
 
-/** The alternate address is a LAN host:port — show it without the scheme. */
+/** The Home address is a LAN host:port — show it without the scheme. */
 const bare = (url: string) =>
     url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 </script>
@@ -167,13 +167,11 @@ const bare = (url: string) =>
                             :href="openIn(row)!.alt_url!"
                             target="_blank"
                             rel="noopener noreferrer"
-                            :title="`Open over the local network: ${openIn(row)!.alt_url}`"
+                            :title="`Open on the home network: ${bare(openIn(row)!.alt_url!)}`"
                             class="inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md border border-border/70 bg-muted/40 px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                         >
-                            <Network class="h-3.5 w-3.5 shrink-0" />
-                            <span class="truncate">{{
-                                bare(openIn(row)!.alt_url!)
-                            }}</span>
+                            <House class="h-3.5 w-3.5 shrink-0" />
+                            <span class="truncate">Home</span>
                         </a>
                     </div>
                 </div>

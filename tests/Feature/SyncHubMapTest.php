@@ -79,6 +79,63 @@ test('missing cards are created for the lan and public addresses', function () {
     expect($public->sort_order)->toBeGreaterThan($lan->sort_order);
 });
 
+test('a new mini-pc card opens the tailnet address with the lan one as home', function () {
+    $map = hubMap();
+    foreach ($map['items'] as &$item) {
+        if ($item['id'] === 'newsite') {
+            $item['lives']['urls'][] = 'https://minipc.jackal-hippocampus.ts.net:530';
+        }
+    }
+    unset($item);
+
+    syncMap($map)->assertSuccessful();
+
+    expect(Website::where('roster_id', 'newsite')->where('roster_slot', 'lan')->sole())
+        ->url->toBe('https://minipc.jackal-hippocampus.ts.net:530')
+        ->alt_url->toBe('http://192.168.0.164:130')
+        ->location->toBe('minipc');
+
+    // The public card never takes the tailnet address.
+    expect(Website::where('roster_id', 'newsite')->where('roster_slot', 'public')->sole())
+        ->url->toBe('https://new.thecorgisquad.com')
+        ->alt_url->toBeNull();
+});
+
+test('a lan-only card moves to the tailnet address once the roster lists one', function () {
+    syncMap()->assertSuccessful();
+    expect(Website::where('roster_id', 'budget')->sole()->alt_url)->toBeNull();
+
+    $map = hubMap();
+    foreach ($map['items'] as &$item) {
+        if ($item['id'] === 'budget') {
+            $item['lives']['urls'][] = 'https://minipc.jackal-hippocampus.ts.net:447';
+        }
+    }
+    unset($item);
+
+    syncMap($map)->assertSuccessful()->expectsOutputToContain('updated 1');
+
+    expect(Website::where('roster_id', 'budget')->sole())
+        ->url->toBe('https://minipc.jackal-hippocampus.ts.net:447')
+        ->alt_url->toBe('http://192.168.0.164:84');
+
+    syncMap($map)->assertSuccessful()->expectsOutputToContain('updated 0');
+});
+
+test('a card with its addresses the wrong way round is swapped', function () {
+    syncMap()->assertSuccessful();
+    Website::where('roster_id', 'budget')->update([
+        'url' => 'http://192.168.0.164:84',
+        'alt_url' => 'https://minipc.jackal-hippocampus.ts.net:447',
+    ]);
+
+    syncMap()->assertSuccessful();
+
+    expect(Website::where('roster_id', 'budget')->sole())
+        ->url->toBe('https://minipc.jackal-hippocampus.ts.net:447')
+        ->alt_url->toBe('http://192.168.0.164:84');
+});
+
 test('skips tailnet-only, feeds, portless, archived, services, self and empty items', function () {
     syncMap()->assertSuccessful();
 

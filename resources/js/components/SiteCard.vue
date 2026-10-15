@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FlaskConical, Globe, Network } from 'lucide-vue-next';
+import { FlaskConical, Globe, House } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -17,8 +17,6 @@ const props = defineProps<{
 /** Show an address without the scheme or trailing slash. */
 const bare = (url: string | null | undefined) =>
     (url ?? '').replace(/^https?:\/\//, '').replace(/\/$/, '');
-
-const altLabel = computed(() => bare(props.site.alt_url));
 
 /** The site has cut over to a public copy; this card is only for testing now. */
 const testing = computed(() => Boolean(props.site.live_url));
@@ -122,11 +120,11 @@ const testing = computed(() => Boolean(props.site.live_url));
                     :href="site.alt_url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    :title="`Open over the local network: ${site.alt_url}`"
+                    :title="`Open on the home network: ${bare(site.alt_url)}`"
                     class="relative z-20 inline-flex w-fit max-w-full items-center gap-1.5 rounded-md border border-border/70 bg-muted/40 px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
-                    <Network class="h-3 w-3 shrink-0" />
-                    <span class="truncate">{{ altLabel }}</span>
+                    <House class="h-3 w-3 shrink-0" />
+                    <span class="truncate">Home</span>
                 </a>
             </div>
         </div>

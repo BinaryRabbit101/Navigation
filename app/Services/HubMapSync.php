@@ -12,7 +12,8 @@ use RuntimeException;
  *
  * Every rostered project with an address gets a card: a Mini-PC card for its LAN
  * `http://192.168.0.164:<port>` URL and a Live card, "<name> (public site)", for a public
- * https URL. Cards are keyed by (roster_id, roster_slot). Existing hand-made cards are
+ * https URL. A Mini-PC card opens the project's tailnet (`*.ts.net`) address when the roster
+ * lists one, with the LAN address kept as its Home link (alt_url). Cards are keyed by (roster_id, roster_slot). Existing hand-made cards are
  * adopted by host+port on first sight instead of being duplicated, and an adopted card
  * keeps its own title and URL until the roster itself changes them. Sort order and image
  * are never touched. A card whose project leaves the map (or is archived) is hidden, not
@@ -67,7 +68,7 @@ class HubMapSync
      * already taken (HUB and its site, a tab of a site) is skipped.
      *
      * @param  array<int, mixed>  $items
-     * @return Collection<int, array{id: string, slot: string, name: string, title: string, url: string, key: string}>
+     * @return Collection<int, array{id: string, slot: string, name: string, title: string, url: string, key: string, tailnet: string|null}>
      */
     private function targets(array $items, ?string $self): Collection
     {
@@ -95,6 +96,7 @@ class HubMapSync
 
             $lan = collect($urls)->first(fn ($u) => $this->isLan($u));
             $public = collect($urls)->first(fn ($u) => $this->isPublic($u));
+            $tailnet = collect($urls)->first(fn ($u) => $this->isTailnet($u));
 
             if ($lan === null && $public === null) {
                 $this->note('skipped', "{$id}: no LAN or public address (".implode(', ', $urls).')');
@@ -123,6 +125,7 @@ class HubMapSync
                     'title' => self::title($name, $slot),
                     'url' => $url,
                     'key' => $key,
+                    'tailnet' => $slot === 'lan' ? $tailnet : null,
                 ]);
             }
         }
@@ -131,7 +134,7 @@ class HubMapSync
     }
 
     /**
-     * @param  Collection<int, array{id: string, slot: string, name: string, title: string, url: string, key: string}>  $targets
+     * @param  Collection<int, array{id: string, slot: string, name: string, title: string, url: string, key: string, tailnet: string|null}>  $targets
      */
     private function apply(Collection $targets): void
     {
@@ -152,7 +155,8 @@ class HubMapSync
             if ($this->adopt($cards, $t) === null) {
                 $card = Website::create([
                     'title' => $t['title'],
-                    'url' => $t['url'],
+                    'url' => $t['tailnet'] ?? $t['url'],
+                    'alt_url' => $t['tailnet'] !== null ? $t['url'] : null,
                     'sort_order' => ((int) $cards->max('sort_order')) + 1,
                     'roster_id' => $t['id'],
                     'roster_slot' => $t['slot'],
@@ -177,7 +181,7 @@ class HubMapSync
      * The card keeps its own title and URL; the roster's are only remembered.
      *
      * @param  Collection<int, Website>  $cards
-     * @param  array{id: string, slot: string, name: string, title: string, url: string, key: string}  $t
+     * @param  array{id: string, slot: string, name: string, title: string, url: string, key: string, tailnet: string|null}  $t
      */
     private function adopt(Collection $cards, array $t): ?Website
     {
@@ -204,7 +208,7 @@ class HubMapSync
      * A card already tied to the roster: follow the roster's name and URL only when the
      * roster changed them since the last sync, and bring the card back if it was hidden.
      *
-     * @param  array{id: string, slot: string, name: string, title: string, url: string, key: string}  $t
+     * @param  array{id: string, slot: string, name: string, title: string, url: string, key: string, tailnet: string|null}  $t
      */
     private function refresh(Website $card, array $t): void
     {
@@ -225,6 +229,9 @@ class HubMapSync
             $changes['roster_url'] = $t['url'];
         }
 
+        $swap = $this->tailnetFirst($card, $t, $changes);
+        $changes = [...$changes, ...$swap];
+
         if ($card->hidden) {
             $changes['hidden'] = false;
             $this->note('unhidden', "#{$card->id} {$card->title}");
@@ -238,9 +245,42 @@ class HubMapSync
 
         $card->update($changes);
 
-        if (isset($changes['roster_name']) || isset($changes['roster_url'])) {
-            $this->note('updated', "#{$card->id} {$card->title} -> {$t['url']}");
+        if (isset($changes['roster_name']) || isset($changes['roster_url']) || $swap !== []) {
+            $this->note('updated', "#{$card->id} {$card->title} -> {$card->url}");
         }
+    }
+
+    /**
+     * A Mini-PC card opens its tailnet address with the LAN one as Home: give a LAN-only
+     * card the roster's tailnet address, and swap a card that has them the wrong way round.
+     *
+     * @param  array{id: string, slot: string, name: string, title: string, url: string, key: string, tailnet: string|null}  $t
+     * @param  array<string, mixed>  $changes  what refresh() already decided
+     * @return array<string, mixed>
+     */
+    private function tailnetFirst(Website $card, array $t, array $changes): array
+    {
+        if ($t['slot'] !== 'lan') {
+            return [];
+        }
+
+        $url = $changes['url'] ?? $card->url;
+        $alt = $changes['alt_url'] ?? $card->alt_url;
+
+        if ($alt === null && $t['tailnet'] !== null && $this->isLan($url)) {
+            return ['url' => $t['tailnet'], 'alt_url' => $url];
+        }
+
+        if ($alt !== null && $this->isTailnet($alt) && ! $this->isTailnet($url)) {
+            return ['url' => $alt, 'alt_url' => $url];
+        }
+
+        return [];
+    }
+
+    private function isTailnet(string $url): bool
+    {
+        return str_ends_with(strtolower((string) parse_url($url, PHP_URL_HOST)), '.ts.net');
     }
 
     private function isLan(string $url): bool
